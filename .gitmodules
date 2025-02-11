@@ -1,0 +1,3 @@
+[submodule "lib/ssd-solar-system"]
+	path = lib/ssd-solar-system
+	url = git@github.com:federico3/ssd-solar-system.git
