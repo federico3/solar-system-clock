@@ -18,3 +18,13 @@
 .read-the-docs {
   color: #888;
 }
+
+.top-alert {
+  margin-top: 0px; /* Add a top margin to avoid content overlay */
+  position:fixed; 
+  top: 0px; 
+  left: 0px; 
+  width: 100%;
+  z-index:9999; 
+  border-radius:0px
+}
