@@ -66,13 +66,17 @@
   "connections": [
     [ "esp:TX", "$serialMonitor:RX", "", [] ],
     [ "esp:RX", "$serialMonitor:TX", "", [] ],
+
     [ "rtc1:GND", "esp:GND.2", "black", [ "h-19.2", "v-38.4" ] ],
     [ "esp:5V", "rtc1:5V", "red", [ "v19.2", "h134.55", "v-191.6" ] ],
     [ "ring60:VCC", "esp:5V", "red", [ "v9.58", "h-44.76", "v307.2" ] ],
     [ "esp:GND.2", "ring60:GND", "black", [ "h9.6", "v-48", "h-86.4" ] ],
+
     [ "rtc1:SCL", "esp:22", "magenta", [ "h-28.8", "v105.4" ] ],
-    [ "esp:21", "rtc1:SDA", "limegreen", [ "h28.8", "v-38.1" ] ],
-    [ "ring60:DIN", "esp:2", "yellow", [ "v9.58", "h76.8", "v192.02" ] ],
+    [ "rtc1:SDA", "esp:21", "limegreen", [] ],
+
+    [ "ring60:DIN", "esp:5", "yellow", [] ],
+
     [ "ring60:GND", "ring48:GND", "", [ "*" ] ],
     [ "ring48:GND", "ring40:GND", "", [ "*" ] ],
     [ "ring40:GND", "ring32:GND", "", [ "*" ] ],
