@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 
+import PlanetColorPicker from "./ColorPicker";
+import { ChromePicker, BlockPicker } from 'react-color';
+
 // Bootstrap CSS
 import "bootstrap/dist/css/bootstrap.min.css";
 // Bootstrap Bundle JS
@@ -12,7 +15,7 @@ import Orrery from './Orrery'
 import AlertWidget from './AlertWidget'
 
 let ROOT_URL = "http://localhost:8180"
-// ROOT_URL = ""
+ROOT_URL = ""
 
 function App() {
 
@@ -39,6 +42,21 @@ function App() {
     backend_message: "This is a message",
     error: "This is an error",
   });
+
+  let planetcolors_int = {"planet_colors":[12566205,14267281,12241881,15891038,12550454,15912328,13562610,7904959],"sun_color":15893282}
+  let _planetcolors = {"planet_colors": ["","","","","","","",""], "sun_color": ""}
+  _planetcolors["sun_color"] = "#"+planetcolors_int["sun_color"].toString(16);
+  for (let planet_index = 0; planet_index<_planetcolors["planet_colors"].length; planet_index++){
+    _planetcolors["planet_colors"][planet_index]="#"+planetcolors_int["planet_colors"][planet_index].toString(16);
+  }
+
+  const [planetcolors, setPlanetcolors] = useState({
+    planet_colors: _planetcolors["planet_colors"],
+    sun_color: _planetcolors["sun_color"]
+  })
+
+  // console.log(_planetcolors)
+  // setPlanetcolors({planet_colors: _planetcolors["planet_colors"], sun_color: })
 
   // When the date picker is updated, this is called
   async function dateSetter(){
@@ -121,6 +139,35 @@ function App() {
     } catch (error) {
       console.error(error.message);
       setResponse_alert({backend_state: "Error", backend_message: "Error sending new mode: ", error: error.message})
+    }
+  }
+
+  async function colorSetter(){
+    try{
+      // Call the endpoint
+      let planet_colors_int = []
+      for (let planet_ix = 0; planet_ix<planetcolors.planet_colors.length; planet_ix++){
+        planet_colors_int.push(parseInt("0x"+planetcolors.planet_colors[planet_ix].slice(1,planetcolors.planet_colors[planet_ix].length)))
+      }
+      let colors_json = {
+        "planet_colors": planet_colors_int,
+        "sun_color": parseInt("0x"+planetcolors.sun_color.slice(1,planetcolors.sun_color.length))
+      }
+
+      const response = await fetch(ROOT_URL+'/setPlanetcolors/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(colors_json)
+      })
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      setResponse_alert({backend_state: "OK", backend_message: "Sending colors OK", error: ""})
+    } catch (error) {
+      console.error(error.message);
+      setResponse_alert({backend_state: "Error", backend_message: "Error sending new colors: ", error: error.message})
     }
   }
 
@@ -223,6 +270,34 @@ function App() {
     }
   }
 
+  // This tries to fetch colors
+  async function colorGetter(){
+    console.log("Trying to get some colors!")
+    try{
+      const response = await fetch(ROOT_URL+'/planetcolors/')
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+
+      const colors_json = await response.json();
+      console.log(colors_json);
+      let _planetcolors = {"planet_colors": ["","","","","","","",""], "sun_color": ""}
+      _planetcolors["sun_color"] = "#"+colors_json["sun_color"].toString(16).padStart(6, '0');
+      for (let planet_index = 0; planet_index<colors_json["planet_colors"].length; planet_index++){
+        _planetcolors["planet_colors"][planet_index]="#"+colors_json["planet_colors"][planet_index].toString(16).padStart(6, '0');
+      }
+      setPlanetcolors({
+        planet_colors: _planetcolors["planet_colors"],
+        sun_color: _planetcolors["sun_color"]
+      })
+
+      setResponse_alert({backend_state: "OK", backend_message: "Fetching longitudes OK", error: ""})
+    } catch (error) {
+      console.error(error.message);
+      setResponse_alert({backend_state: "Error", backend_message: "Error fetching colors: ", error: error.message})
+    }
+  }
+
   // Register an effect to fetch longitudes, speeds, and dates every x seconds
   useEffect(() => {
     const intervalCall = setInterval(() => {
@@ -230,12 +305,23 @@ function App() {
       dateGetter();
       speedGetter();
       modeGetter();
-    }, 20000);
+    }, 2500);
     return () => {
       // clean up
       clearInterval(intervalCall);
     };
   }, []);
+
+  useEffect(() => {
+    const intervalCallColors = setInterval(() => {
+      colorGetter();
+    }, 30000);
+    return () => {
+      // clean up
+      clearInterval(intervalCallColors);
+    };
+  }, []);
+  
 
   // Build the application
   return (
@@ -245,11 +331,33 @@ function App() {
            message={response_alert.backend_message}
            error={response_alert.error}
     />
-    <h1>Solar System Clock</h1>
-    <Orrery longitudes={longitudes.longitudes}/>
-
+    <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+      <h1>Solar System Clock</h1>
+      </div>
+    </div>
+    
+    <div class="row">
+    <div class="col-lg-12">
+    <Orrery longitudes={longitudes.longitudes} planetcolors={planetcolors}/>
+    </div>
+    </div>
+    <div class="row">
+    <div class="col-lg-12">
     <DatePicker dateSetter={dateSetter} speedSetter={speedSetter} modeSetter={modeSetter} SpeedModifier={speedModifier} currentDate={date.date} currentSpeed={speed.speed} currentModeIsLive={clockmode_live.mode_live}/>
+    </div>
+    </div>
+
+
+    <PlanetColorPicker planetcolors={planetcolors} colorchangers={(input)=>{
+      setPlanetcolors(input);
+      colorSetter(); 
+      }}/>
+
+    </div>
     </>
+    
   )
 }
 

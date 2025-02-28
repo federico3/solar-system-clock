@@ -6,8 +6,8 @@ function DatePicker({dateSetter,speedSetter,modeSetter,speedModifier,currentDate
   let mode_color = currentModeIsLive? "DarkGreen": "RoyalBlue";
   let live_button = currentModeIsLive? "": <button type="button" onClick={()=>{modeSetter(true)}} style={{"backgroundColor": "DarkGreen", "color": "white"}}>Live</button> ;
   return (
-    <>
-      <div>
+    <div class="datepicker">
+      <div >
         Mode: <a style={{"fontWeight": "bold", "color": {mode_color}}}>{mode} </a>  {live_button}
       </div>
       <div>
@@ -47,7 +47,7 @@ function DatePicker({dateSetter,speedSetter,modeSetter,speedModifier,currentDate
             <option value="10" label="10¹⁰"></option>
         </datalist>
       </div>
-    </>
+    </div>
   )
 }
 

@@ -4,7 +4,17 @@ function Planet({planetname, planetcenter, planetradius, longitude_rad, fillcolo
     let cx = planetcenter + planetradius*Math.cos(longitude_rad);
     let cy = planetcenter + planetradius*Math.sin(longitude_rad);
     return (
+        <>
         <a href={planetlink} target="_blank"><circle className="planet" key={planetname} id={planetname} cx={cx} cy={cy} r="2" stroke="black" strokeWidth=".5" fill={fillcolor} /></a>
+        {/* <text x={cx} y={cy} 
+        text-anchor="middle"
+        dy="-0.4em"
+        fontSize={8}
+        // stroke="blue" 
+        // stroke-width="1px"
+        > {planetname.slice(-1,planetname.length)}
+        </text> */}
+        </>
     )
 }
 
@@ -15,47 +25,47 @@ function Orbit({planetname, planetcenter, planetradius, strokecolor}){
     )
 }
 
-function Orbits(){
+function Orbits({_planetcolors}){
     let orbit_array = [
-        <Orbit key={"Neptune"} planetname={"Neptune"} planetcenter={50} planetradius={45}  strokecolor={"#789EBF"}/>,
-        <Orbit key={"Uranus"} planetname={"Uranus"} planetcenter={50} planetradius={40}  strokecolor={"#CEF2F2"}/>,
-        <Orbit key={"Saturn"} planetname={"Saturn"} planetcenter={50} planetradius={35}  strokecolor={"#F2CD88"}/>,
-        <Orbit key={"Jupiter"} planetname={"Jupiter"} planetcenter={50} planetradius={30} strokecolor={"#BF8136"}/>,
-        <Orbit key={"Mars"} planetname={"Mars"} planetcenter={50} planetradius={25}  strokecolor={"#F27A5E"}/>,
-        <Orbit key={"Earth"} planetname={"Earth"} planetcenter={50} planetradius={20}  strokecolor={"#BACBD9"}/>,
-        <Orbit key={"Venus"} planetname={"Venus"} planetcenter={50} planetradius={15}  strokecolor={"#D9B391"}/>,
-        <Orbit key={"Mercury"} planetname={"Mercury"} planetcenter={50} planetradius={10}  strokecolor={"#BFBEBD"}/>,
+        <Orbit key={"Neptune"} planetname={"Neptune"} planetcenter={50} planetradius={45}  strokecolor={_planetcolors[7]}/>,
+        <Orbit key={"Uranus"} planetname={"Uranus"} planetcenter={50} planetradius={40}  strokecolor={_planetcolors[6]}/>,
+        <Orbit key={"Saturn"} planetname={"Saturn"} planetcenter={50} planetradius={35}  strokecolor={_planetcolors[5]}/>,
+        <Orbit key={"Jupiter"} planetname={"Jupiter"} planetcenter={50} planetradius={30} strokecolor={_planetcolors[4]}/>,
+        <Orbit key={"Mars"} planetname={"Mars"} planetcenter={50} planetradius={25}  strokecolor={_planetcolors[3]}/>,
+        <Orbit key={"Earth"} planetname={"Earth"} planetcenter={50} planetradius={20}  strokecolor={_planetcolors[2]}/>,
+        <Orbit key={"Venus"} planetname={"Venus"} planetcenter={50} planetradius={15}  strokecolor={_planetcolors[1]}/>,
+        <Orbit key={"Mercury"} planetname={"Mercury"} planetcenter={50} planetradius={10}  strokecolor={_planetcolors[0]}/>,
     ]
     return(
         orbit_array
     )
 }
 
-function Planets({_longitudes}){
+function Planets({_longitudes, _planetcolors}){
     let planet_array = [
-        <Planet key={"Neptune"} planetname={"Neptune"} planetcenter={50} planetradius={45} longitude_rad={_longitudes[7]} fillcolor={"#789EBF"} planetlink={"https://en.wikipedia.org/wiki/Neptune_(planet)"}/>,
-        <Planet key={"Uranus"} planetname={"Uranus"} planetcenter={50} planetradius={40} longitude_rad={_longitudes[6]} fillcolor={"#CEF2F2"} planetlink={"https://en.wikipedia.org/wiki/Uranus_(planet)"}/>,
-        <Planet key={"Saturn"} planetname={"Saturn"} planetcenter={50} planetradius={35} longitude_rad={_longitudes[5]} fillcolor={"#F2CD88"} planetlink={"https://en.wikipedia.org/wiki/Saturn_(planet)"}/>,
-        <Planet key={"Jupiter"} planetname={"Jupiter"} planetcenter={50} planetradius={30} longitude_rad={_longitudes[4]} fillcolor={"#BF8136"} planetlink={"https://en.wikipedia.org/wiki/Jupiter_(planet)"}/>,
-        <Planet key={"Mars"} planetname={"Mars"} planetcenter={50} planetradius={25} longitude_rad={_longitudes[3]} fillcolor={"#F27A5E"} planetlink={"https://en.wikipedia.org/wiki/Mars_(planet)"}/>,
-        <Planet key={"Earth"} planetname={"Earth"} planetcenter={50} planetradius={20} longitude_rad={_longitudes[2]} fillcolor={"#BACBD9"} planetlink={"https://en.wikipedia.org/wiki/Earth_(planet)"}/>,
-        <Planet key={"Venus"} planetname={"Venus"} planetcenter={50} planetradius={15} longitude_rad={_longitudes[1]} fillcolor={"#D9B391"} planetlink={"https://en.wikipedia.org/wiki/Venus_(planet)"}/>,
-        <Planet key={"Mercury"} planetname={"Mercury"} planetcenter={50} planetradius={10} longitude_rad={_longitudes[0]} fillcolor={"#BFBEBD"} planetlink={"https://en.wikipedia.org/wiki/Mercury_(planet)"}/>,
+        <Planet key={"Neptune"} planetname={"Neptune ♆"} planetcenter={50} planetradius={45} longitude_rad={_longitudes[7]} fillcolor={_planetcolors[7]} planetlink={"https://en.wikipedia.org/wiki/Neptune_(planet)"}/>,
+        <Planet key={"Uranus"} planetname={"Uranus ♅"} planetcenter={50} planetradius={40} longitude_rad={_longitudes[6]} fillcolor={_planetcolors[6]} planetlink={"https://en.wikipedia.org/wiki/Uranus_(planet)"}/>,
+        <Planet key={"Saturn"} planetname={"Saturn ♄"} planetcenter={50} planetradius={35} longitude_rad={_longitudes[5]} fillcolor={_planetcolors[5]} planetlink={"https://en.wikipedia.org/wiki/Saturn_(planet)"}/>,
+        <Planet key={"Jupiter"} planetname={"Jupiter ♃"} planetcenter={50} planetradius={30} longitude_rad={_longitudes[4]} fillcolor={_planetcolors[4]} planetlink={"https://en.wikipedia.org/wiki/Jupiter_(planet)"}/>,
+        <Planet key={"Mars"} planetname={"Mars ♂"} planetcenter={50} planetradius={25} longitude_rad={_longitudes[3]} fillcolor={_planetcolors[3]} planetlink={"https://en.wikipedia.org/wiki/Mars_(planet)"}/>,
+        <Planet key={"Earth"} planetname={"Earth ♁"} planetcenter={50} planetradius={20} longitude_rad={_longitudes[2]} fillcolor={_planetcolors[2]} planetlink={"https://en.wikipedia.org/wiki/Earth_(planet)"}/>,
+        <Planet key={"Venus"} planetname={"Venus ♀"} planetcenter={50} planetradius={15} longitude_rad={_longitudes[1]} fillcolor={_planetcolors[1]} planetlink={"https://en.wikipedia.org/wiki/Venus_(planet)"}/>,
+        <Planet key={"Mercury"} planetname={"Mercury ☿"} planetcenter={50} planetradius={10} longitude_rad={_longitudes[0]} fillcolor={_planetcolors[0]} planetlink={"https://en.wikipedia.org/wiki/Mercury_(planet)"}/>,
     ]
     return(
         planet_array
     )
 }
 
-function Orrery({longitudes}) {
+function Orrery({longitudes, planetcolors}) {
   
   return (
     <>
-      <div>
+      <div class="orrery">
         <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <Orbits/>
-            <circle className="planet" id="sun" cx="50" cy="50" r="5" stroke="black" strokeWidth=".5" fill="#f28322" />
-            <Planets _longitudes={longitudes}/>
+            <Orbits _planetcolors={planetcolors["planet_colors"]}/>
+            <circle className="planet" id="sun" cx="50" cy="50" r="5" stroke="black" strokeWidth=".5" fill={planetcolors.sun_color} />
+            <Planets _longitudes={longitudes} _planetcolors={planetcolors.planet_colors}/>
         </svg>
       </div>
     </>
