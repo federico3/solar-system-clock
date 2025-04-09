@@ -46,6 +46,7 @@ void setSpeed(AsyncWebServerRequest *request)
 void getDate(AsyncWebServerRequest *request)
 {
   char date_str[50];
+  // Serial.printf("Days since J2K epoch: %lf", days_since_j2k_epoch);
   sprintf(date_str, "%lf", (days_since_j2k_epoch*(24*60*60)+UNIX_TO_J2K_OFFSET_S)*1e3);
   request->send(200, "text/plain", date_str); 
 }
@@ -72,7 +73,9 @@ void setDate(AsyncWebServerRequest *request)
         clock_mode = PLAYBACK;
 
         webpreferences.begin("SSC", false);
-        webpreferences.putDouble("j2kdate", days_since_j2k_epoch);
+        webpreferences.putDouble("j2kdate", j2kdate);
+        webpreferences.end();
+        webpreferences.begin("SSC", false);
         webpreferences.putBool("clock_is_live", (clock_mode==LIVE));
         webpreferences.end();
       }

@@ -35,13 +35,15 @@
 // CRGB getPlanetColor(int planetIndex);
 void notFound(AsyncWebServerRequest *request);
 
+bool date_is_valid(double days_since_j2k);
+
 void loadPreferences();
 
 // Note: Wokwi uses a special WiFi network called Wokwi-GUEST (no password).
 // This virtual network provides internet access to the simulated ESP32.
 // To learn more: https://docs.wokwi.com/guides/esp32-wifi#connecting-to-the-wifi
 
-String wifi_ap_ssid = "SolarSystemClock";
+String wifi_ap_ssid = "SolarSystemClock1";
 String wifi_ap_password = "";
 String wifi_sta_ssid = "Wokwi-GUEST";
 String wifi_sta_password = "";

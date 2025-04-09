@@ -11,7 +11,11 @@ bool led_available=true;
 Preferences preferences;
 
 // Initialize the RTC
-RTC_DS1307 rtc;
+#ifdef RTC_IS_DS1307
+  RTC_DS1307 rtc;
+#else
+  RTC_PCF8523 rtc;
+#endif
 
 enum ClockMode clock_mode=LIVE;
 
@@ -48,7 +52,7 @@ void setup() {
     // #ifdef WIFI_AP_MODE
     Serial.print("(AP mode)... ");
     WiFi.mode(WIFI_AP);
-    WiFi.softAP(wifi_ap_ssid, wifi_ap_password, WIFI_CHANNEL);
+    WiFi.softAP(wifi_ap_ssid.c_str(), wifi_ap_password.c_str(), WIFI_CHANNEL);
     myIP = WiFi.softAPIP();
     // #else // Both
     //   Serial.print("(AP+STA mode)... ");
@@ -81,13 +85,23 @@ void setup() {
     }
   }
   
-  if (rtc_available &&  !rtc.isrunning()) {
+
+  if (rtc_available &&
+  #ifdef RTC_IS_DS1307
+      !rtc.isrunning()
+  #else
+      (! rtc.initialized() || rtc.lostPower())
+  #endif
+  ) {
     Serial.println("RTC is NOT running!");
     // This line sets the RTC with an explicit date & time, for example to set
     // January 1, 2024 at 00:00 you would call:
     // rtc.adjust(DateTime(2024, 1, 1, 0, 0, 0));
     // And this sets the datetime to the binary compilation datetime.
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    #ifndef RTC_IS_DS1307
+      rtc.start();
+    #endif
   }
 
   last_frame_time = rtc.now();
@@ -162,12 +176,21 @@ void loop() {
   } else {
     double playback_clock_increment_days = playback_speedup/(60*60*24);
     if (rtc_available){
-      playback_clock_increment_days = (now-last_frame_time).totalseconds()*playback_speedup/(60*60*24);
+      double candidate_playback_clock_increment_days = (now-last_frame_time).totalseconds()*playback_speedup/(60*60*24);
+      if (!std::isnan(candidate_playback_clock_increment_days)){
+        playback_clock_increment_days = candidate_playback_clock_increment_days;
+      }
       last_frame_time = now;
     }
     // Increment the time by time since last frame, multiplied by playback speedup, in days.
+    // Serial.printf("Updating days since J2K epoch by adding %lf to get %lf\n",playback_clock_increment_days, days_since_j2k_epoch);
     days_since_j2k_epoch += playback_clock_increment_days;
     // days_since_j2k_epoch += 0.0001*playback_speedup/(60*60*24);
+  }
+  if (date_is_valid(days_since_j2k_epoch)){
+    preferences.begin("SSC", false);
+    preferences.putDouble("j2kdate", days_since_j2k_epoch);
+    preferences.end();
   }
 
   // Initialize LEDs
@@ -246,6 +269,15 @@ void notFound(AsyncWebServerRequest *request)
   }
 }
 
+bool date_is_valid(double days_since_j2k){
+  double seconds_since_unix_epoch = days_since_j2k*(60.*60.*24.)+ UNIX_TO_J2K_OFFSET_S;
+  return (
+    !std::isnan(days_since_j2k) &&
+    seconds_since_unix_epoch>=-156838003622 &&
+    seconds_since_unix_epoch<=32503708800
+  );
+}
+
 void loadPreferences(){
     // Preferences
   // WiFi
@@ -291,14 +323,25 @@ void loadPreferences(){
 
   if (preferences.isKey("j2kdate")){
     Serial.print("Reading key j2kdate...");
-    days_since_j2k_epoch = preferences.getDouble("j2kdate");
+    double days_since_j2k_epoch_from_prefs = preferences.getDouble("j2kdate");
+    double seconds_since_unix_epoch_from_prefs = days_since_j2k_epoch_from_prefs*(60.*60.*24.)+ UNIX_TO_J2K_OFFSET_S;
+    if (date_is_valid(days_since_j2k_epoch_from_prefs)){
+      // The date is valid
+      days_since_j2k_epoch = days_since_j2k_epoch_from_prefs;
+    } // If this does not work, the date will be reset to J2K epoch, and it will be written in at the next cycle
   } else {
     Serial.print("SETTING key j2kdate...");
     preferences.putDouble("j2kdate", days_since_j2k_epoch);
   }
   if (preferences.isKey("play_speedup")){
     Serial.print("Reading key play_speedup...");
-    playback_speedup = preferences.getDouble("play_speedup");
+    double candidate_playback_speedup = preferences.getDouble("play_speedup");
+    if (!std::isnan(candidate_playback_speedup)){
+      playback_speedup=candidate_playback_speedup;
+    } else {
+      Serial.println("Playback speedup is nan, resetting!\n");
+      preferences.putDouble("play_speedup", playback_speedup);
+    }
   } else {
     Serial.print("SETTING key play_speedup...");
     preferences.putDouble("play_speedup", playback_speedup);
