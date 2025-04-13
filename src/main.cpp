@@ -7,6 +7,9 @@
 bool rtc_available=true;
 bool led_available=true;
 
+#define I2C_SDA 33
+#define I2C_SCL 32
+
 // Store preferences like colors, etc
 Preferences preferences;
 
@@ -69,7 +72,7 @@ void setup() {
 
   // Clock
   if (rtc_available){
-    Wire.begin();
+    Wire.begin(I2C_SDA, I2C_SCL);
     Serial.println("Started Wire");
     uint8_t rtc_tries = 10;
     while (!rtc.begin() && --rtc_tries>0){ 
